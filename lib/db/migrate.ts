@@ -4,7 +4,7 @@ import { migrate } from "drizzle-orm/mysql2/migrator";
 import mysql from "mysql2/promise";
 
 config({
-  path: ".env",
+  path: ".env.local",
 });
 
 const runMigrate = async () => {

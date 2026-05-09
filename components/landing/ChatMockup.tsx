@@ -14,7 +14,7 @@ export function ChatMockup() {
               <span className="h-2.5 w-2.5 rounded-full bg-zinc-700" />
               <span className="h-2.5 w-2.5 rounded-full bg-zinc-700" />
             </div>
-            <span className="ml-3 text-xs text-muted-foreground">flowfi · copilot</span>
+            <span className="ml-3 text-xs text-muted-foreground">HustFina · copilot</span>
           </div>
           <div className="flex items-center gap-1.5 text-[10px] text-primary">
             <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
@@ -77,7 +77,7 @@ export function ChatMockup() {
         <div className="flex items-center gap-2 rounded-xl bg-black/40 border border-white/5 px-3 py-2">
           <input
             disabled
-            placeholder="Ask FlowFi anything…"
+            placeholder="Ask HustFina anything…"
             className="flex-1 bg-transparent text-sm placeholder:text-muted-foreground/60 outline-none"
           />
           <button className="grid place-items-center h-7 w-7 rounded-lg bg-primary text-primary-foreground">

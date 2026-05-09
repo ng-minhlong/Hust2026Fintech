@@ -51,7 +51,7 @@ export function Hero() {
               transition={{ duration: 0.7, delay: 0.15 }}
               className="mt-6 text-base sm:text-lg text-muted-foreground max-w-xl leading-relaxed"
             >
-              FlowFi is an AI Financial Copilot that helps users send money, manage budgets,
+              HustFina is an AI Financial Copilot that helps users send money, manage budgets,
               optimize cross-border payments, and make smarter financial decisions — through
               conversation.
             </motion.p>

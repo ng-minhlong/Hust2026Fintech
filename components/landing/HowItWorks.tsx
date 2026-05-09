@@ -6,7 +6,7 @@ const steps = [
   {
     icon: MessageCircle,
     title: "Understand Intent",
-    desc: "FlowFi parses natural language requests — 'send', 'budget', 'optimize' — into structured financial actions.",
+    desc: "HustFina parses natural language requests — 'send', 'budget', 'optimize' — into structured financial actions.",
   },
   {
     icon: Brain,

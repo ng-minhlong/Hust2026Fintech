@@ -14,8 +14,8 @@ export function Footer() {
           <div className="grid h-7 w-7 place-items-center rounded-md bg-gradient-to-br from-primary to-accent">
             <Sparkles className="h-3.5 w-3.5 text-primary-foreground" />
           </div>
-          <span className="font-display font-semibold">FlowFi</span>
-          <span className="ml-3 text-xs text-muted-foreground">© 2026 FlowFi · All rights reserved</span>
+          <span className="font-display font-semibold">HustFina</span>
+          <span className="ml-3 text-xs text-muted-foreground">© 2026 HustFina · All rights reserved</span>
         </div>
 
         <div className="flex items-center gap-2">

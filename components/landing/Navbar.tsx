@@ -43,7 +43,7 @@ export function Navbar() {
               <div className="absolute inset-0 rounded-lg bg-primary/40 blur-md opacity-60 group-hover:opacity-100 transition" />
             </div>
             <span className="font-display text-lg font-semibold tracking-tight">
-              FlowFi
+              HustFina
             </span>
           </a>
 
@@ -66,13 +66,14 @@ export function Navbar() {
               className="text-muted-foreground hover:text-foreground"
               onClick={() => router.push("/login")}
             >
-              Sign in
+              Đăng nhập
             </Button>
             <Button
               size="sm"
+              onClick={() => router.push("/register")}
               className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_20px_-4px_var(--glow)]"
             >
-              Try Demo
+              Đăng ký
             </Button>
           </div>
 

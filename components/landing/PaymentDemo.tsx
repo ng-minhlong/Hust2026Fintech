@@ -33,7 +33,7 @@ export function PaymentDemo() {
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
         <SectionHeader
           eyebrow="Cross-Border Demo"
-          title="Watch FlowFi Pick The Optimal Route"
+          title="Watch HustFina Pick The Optimal Route"
           subtitle="One message in. Multiple rails compared. Best path executed."
         />
 
@@ -142,7 +142,7 @@ export function PaymentDemo() {
               </div>
 
               <div className="mt-4 rounded-xl bg-black/30 border border-white/5 p-3 text-xs text-muted-foreground">
-                FlowFi recommends <span className="text-primary font-medium">USDC route</span> —
+                HustFina recommends <span className="text-primary font-medium">USDC route</span> —
                 saves <span className="text-foreground font-medium">$54.80</span> vs SWIFT, with
                 <span className="text-foreground font-medium"> mid-market FX</span> and 3-minute
                 settlement.

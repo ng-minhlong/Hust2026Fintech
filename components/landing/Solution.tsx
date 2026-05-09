@@ -18,7 +18,7 @@ export function Solution() {
         <SectionHeader
           eyebrow="The Solution"
           title="One AI Copilot For Your Financial Life"
-          subtitle="From sending money abroad to optimizing budgets — FlowFi unifies every financial decision behind a single conversational interface."
+          subtitle="From sending money abroad to optimizing budgets — HustFina unifies every financial decision behind a single conversational interface."
         />
 
         <div className="mt-16 grid lg:grid-cols-2 gap-10 items-center">

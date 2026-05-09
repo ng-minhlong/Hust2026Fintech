@@ -55,12 +55,12 @@ function PureChatHeader({
         className="hidden rounded-lg bg-foreground px-4 text-background hover:bg-foreground/90 md:ml-auto md:flex"
       >
         <Link
-          href="https://vercel.com/templates/next.js/chatbot"
+          href="https://github.com/ng-minhlong/Hust2026Fintech"
           rel="noopener noreferrer"
           target="_blank"
         >
-          <VercelIcon size={16} />
-          SlideMind Logo
+          
+          HustFina Repo
         </Link>
       </Button>
     </header>

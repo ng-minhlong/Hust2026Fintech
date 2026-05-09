@@ -378,7 +378,7 @@ export async function saveDocument({
   userId: string;
 }) {
   try {
-    return await db
+    await db
       .insert(document)
       .values({
         id,
@@ -387,8 +387,9 @@ export async function saveDocument({
         content,
         userId,
         createdAt: new Date(),
-      })
-      .returning();
+      });
+    
+    return;
   } catch (_error) {
     throw new ChatbotError("bad_request:database", "Failed to save document");
   }
@@ -414,11 +415,12 @@ export async function updateDocumentContent({
       throw new ChatbotError("not_found:database", "Document not found");
     }
 
-    return await db
+    await db
       .update(document)
       .set({ content })
-      .where(and(eq(document.id, id), eq(document.createdAt, latest.createdAt)))
-      .returning();
+      .where(and(eq(document.id, id), eq(document.createdAt, latest.createdAt)));
+    
+    return;
   } catch (_error) {
     if (_error instanceof ChatbotError) {
       throw _error;
@@ -481,10 +483,11 @@ export async function deleteDocumentsByIdAfterTimestamp({
         )
       );
 
-    return await db
+    await db
       .delete(document)
-      .where(and(eq(document.id, id), gt(document.createdAt, timestamp)))
-      .returning();
+      .where(and(eq(document.id, id), gt(document.createdAt, timestamp)));
+    
+    return;
   } catch (_error) {
     throw new ChatbotError(
       "bad_request:database",

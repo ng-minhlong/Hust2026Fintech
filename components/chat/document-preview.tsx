@@ -27,7 +27,7 @@ import { ImageEditor } from "./image-editor";
 import { SpreadsheetEditor } from "./sheet-editor";
 import { Editor } from "./text-editor";
 
-type DocumentToolOutput = {
+export type DocumentToolOutput = {
   id: string;
   title: string;
   kind: ArtifactKind;
@@ -82,7 +82,7 @@ export function DocumentPreview({
     return (
       <div className="w-full max-w-[450px]">
         {title ? (
-          <DocumentHeader isStreaming={true} kind={kind} title={title} />
+          <DocumentHeader isStreaming={true} kind={kind as ArtifactKind} title={title} />
         ) : (
           <div className="flex flex-row items-center justify-between gap-2 rounded-t-2xl border border-b-0 border-border/50 px-4 py-3 dark:bg-muted">
             <div className="flex flex-row items-center gap-2.5">
@@ -125,7 +125,7 @@ export function DocumentPreview({
       />
       <DocumentHeader
         isStreaming={artifact.status === "streaming"}
-        kind={document.kind}
+        kind={document.kind as ArtifactKind}
         title={document.title}
       />
       <DocumentContent document={document} />
@@ -216,7 +216,7 @@ const PureDocumentHeader = ({
   isStreaming,
 }: {
   title: string;
-  kind: string;
+  kind: ArtifactKind;
   isStreaming: boolean;
 }) => (
   <div className="flex flex-row items-center justify-between gap-2 rounded-t-2xl border border-b-0 border-border/50 px-4 py-3 dark:bg-muted">

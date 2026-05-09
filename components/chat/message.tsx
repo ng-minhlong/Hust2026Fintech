@@ -16,6 +16,8 @@ import { useDataStream } from "./data-stream-provider";
 import { DocumentToolResult } from "./document";
 import { DocumentPreview } from "./document-preview";
 import { SparklesIcon } from "./icons";
+import type { ArtifactKind } from "./artifact";
+import type { DocumentToolOutput } from "./document-preview";
 import { MessageActions } from "./message-actions";
 import { MessageReasoning } from "./message-reasoning";
 import { PreviewAttachment } from "./preview-attachment";
@@ -255,12 +257,19 @@ const PurePreviewMessage = ({
         );
       }
 
+      if (!part.output) return null;
+      
+      const resultWithCorrectType: Partial<DocumentToolOutput> = {
+        ...part.output,
+        kind: part.output.kind as ArtifactKind
+      };
+      
       return (
         <div className="relative" key={toolCallId}>
           <DocumentPreview
-            args={{ ...part.output, isUpdate: true }}
+            args={{ ...resultWithCorrectType, isUpdate: true }}
             isReadonly={isReadonly}
-            result={part.output}
+            result={resultWithCorrectType}
           />
         </div>
       );
@@ -289,7 +298,7 @@ const PurePreviewMessage = ({
                   ) : (
                     <DocumentToolResult
                       isReadonly={isReadonly}
-                      result={part.output}
+                      result={{ ...part.output, kind: part.output.kind as ArtifactKind }}
                       type="request-suggestions"
                     />
                   )

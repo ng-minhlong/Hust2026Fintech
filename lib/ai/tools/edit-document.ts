@@ -3,6 +3,7 @@ import type { Session } from "next-auth";
 import { z } from "zod";
 import { getDocumentById, saveDocument } from "@/lib/db/queries";
 import type { ChatMessage } from "@/lib/types";
+import type { ArtifactKind } from "@/components/chat/artifact";
 
 type EditDocumentProps = {
   session: Session;
@@ -54,7 +55,7 @@ export const editDocument = ({ session, dataStream }: EditDocumentProps) =>
       await saveDocument({
         id: document.id,
         title: document.title,
-        kind: document.kind,
+        kind: document.kind as ArtifactKind,
         content: updated,
         userId: document.userId,
       });

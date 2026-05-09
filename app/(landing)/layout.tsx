@@ -1,18 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-export const metadata: Metadata = {
-  title: "SlideMind — Turn ideas into beautiful slides in seconds",
-  description:
-    "Search, summarize, and generate fully editable presentations with AI. SlideMind turns prompts into pitch decks, academic decks, and more.",
-  authors: [{ name: "SlideMind" }],
-  openGraph: {
-    title: "SlideMind — Turn ideas into beautiful slides in seconds",
-    description:
-      "Search, summarize, and generate fully editable presentations with AI. SlideMind turns prompts into pitch decks, academic decks, and more.",
-    type: "website",
-  }
-};
+
 
 export default function LandingLayout({
   children,

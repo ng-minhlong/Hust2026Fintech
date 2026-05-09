@@ -6,11 +6,14 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 
-export const metadata: Metadata = {
-  metadataBase: new URL("https://chat.vercel.ai"),
-  title: "SlideMind",
-  description: "Turn ideas into beautiful slides in seconds",
+
+export const metadata = {
+  title: "HustFina — AI Financial Copilot for Banking & Cross-Border Payments",
+  description:
+    "HustFina is an AI Financial Copilot that helps you send money, manage budgets, and optimize cross-border payments through natural language.",
 };
+
+
 
 export const viewport = {
   maximumScale: 1,

@@ -8,6 +8,7 @@ import {
   text,
   timestamp,
   varchar,
+  decimal,
 } from "drizzle-orm/mysql-core";
 
 export const user = mysqlTable("User", {
@@ -31,7 +32,7 @@ export const chat = mysqlTable("Chat", {
   userId: varchar("userId", { length: 36 })
     .notNull()
     .references(() => user.id),
-  visibility: varchar("visibility", { length: 20 })
+  visibility: varchar("visibility", { length: 255 })
     .notNull()
     .default("private"),
 });
@@ -76,7 +77,7 @@ export const document = mysqlTable(
     createdAt: timestamp("createdAt").notNull(),
     title: text("title").notNull(),
     content: text("content"),
-    kind: varchar("kind", { length: 20 })
+    kind: varchar("kind", { length: 255 })
       .notNull()
       .default("text"),
     userId: varchar("userId", { length: 36 })
@@ -133,3 +134,47 @@ export const stream = mysqlTable(
 );
 
 export type Stream = InferSelectModel<typeof stream>;
+
+export const userBalance = mysqlTable("UserBalance", {
+  id: varchar("id", { length: 36 }).primaryKey().notNull().default(''),
+  userId: varchar("userId", { length: 36 })
+    .notNull()
+    .references(() => user.id),
+  accountBalance: decimal("account_balance", { precision: 15, scale: 2 }).notNull().default("0.00"),
+  currency: varchar("currency", { length: 3 }).notNull().default("VND"),
+  updatedAt: timestamp("updatedAt").notNull().defaultNow(),
+});
+
+export type UserBalance = InferSelectModel<typeof userBalance>;
+
+export const transactionHistory = mysqlTable("TransactionHistory", {
+  id: varchar("id", { length: 36 }).primaryKey().notNull().default(''),
+  senderId: varchar("senderId", { length: 36 })
+    .notNull()
+    .references(() => user.id),
+  receiverId: varchar("receiverId", { length: 36 })
+    .notNull()
+    .references(() => user.id),
+  amount: decimal("amount", { precision: 15, scale: 2 }).notNull(),
+  description: text("description"),
+  type: varchar("type", { length: 20 }).notNull(), // manual/ai_assistant
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+  status: varchar("status", { length: 20 }).notNull().default("pending"), // success/failed/pending
+});
+
+export type TransactionHistory = InferSelectModel<typeof transactionHistory>;
+
+export const mySavedAccount = mysqlTable("MySavedAccount", {
+  id: varchar("id", { length: 36 }).primaryKey().notNull().default(''),
+  userId: varchar("userId", { length: 36 })
+    .notNull()
+    .references(() => user.id),
+  savedAccountId: varchar("savedAccountId", { length: 36 })
+    .notNull()
+    .references(() => user.id),
+  shortName: varchar("shortName", { length: 100 }).notNull(),
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt").notNull().defaultNow(),
+});
+
+export type MySavedAccount = InferSelectModel<typeof mySavedAccount>;

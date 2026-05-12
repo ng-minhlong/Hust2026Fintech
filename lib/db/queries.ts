@@ -10,6 +10,7 @@ import {
   gte,
   inArray,
   lt,
+  or,
   type SQL,
 } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
@@ -30,6 +31,9 @@ import {
   type User,
   user,
   vote,
+  userBalance,
+  transactionHistory,
+  mySavedAccount,
 } from "./schema";
 import { generateHashedPassword } from "./utils";
 
@@ -678,6 +682,222 @@ export async function getStreamIdsByChatId({ chatId }: { chatId: string }) {
     throw new ChatbotError(
       "bad_request:database",
       "Failed to get stream ids by chat id"
+    );
+  }
+}
+
+// Payment-related queries
+export async function getUserBalance({ userId }: { userId: string }) {
+  try {
+    const [balance] = await db
+      .select()
+      .from(userBalance)
+      .where(eq(userBalance.userId, userId))
+      .limit(1);
+
+    return balance;
+  } catch (_error) {
+    throw new ChatbotError(
+      "bad_request:database",
+      "Failed to get user balance"
+    );
+  }
+}
+
+export async function createUserBalance({ userId }: { userId: string }) {
+  try {
+    const id = generateUUID();
+    return await db.insert(userBalance).values({
+      id,
+      userId,
+      accountBalance: "0.00",
+      currency: "VND",
+      updatedAt: new Date(),
+    });
+  } catch (_error) {
+    throw new ChatbotError(
+      "bad_request:database",
+      "Failed to create user balance"
+    );
+  }
+}
+
+export async function updateUserBalance({
+  userId,
+  newBalance,
+}: {
+  userId: string;
+  newBalance: string;
+}) {
+  try {
+    return await db
+      .update(userBalance)
+      .set({ 
+        accountBalance: newBalance,
+        updatedAt: new Date()
+      })
+      .where(eq(userBalance.userId, userId));
+  } catch (_error) {
+    throw new ChatbotError(
+      "bad_request:database",
+      "Failed to update user balance"
+    );
+  }
+}
+
+export async function createTransaction({
+  senderId,
+  receiverId,
+  amount,
+  description,
+  type,
+  status = "pending",
+}: {
+  senderId: string;
+  receiverId: string;
+  amount: string;
+  description?: string;
+  type: "manual" | "ai_assistant";
+  status?: "success" | "failed" | "pending";
+}) {
+  try {
+    const id = generateUUID();
+    return await db.insert(transactionHistory).values({
+      id,
+      senderId,
+      receiverId,
+      amount,
+      description,
+      type,
+      status,
+      createdAt: new Date(),
+    });
+  } catch (_error) {
+    throw new ChatbotError(
+      "bad_request:database",
+      "Failed to create transaction"
+    );
+  }
+}
+
+export async function updateTransactionStatus({
+  transactionId,
+  status,
+}: {
+  transactionId: string;
+  status: "success" | "failed" | "pending";
+}) {
+  try {
+    return await db
+      .update(transactionHistory)
+      .set({ status })
+      .where(eq(transactionHistory.id, transactionId));
+  } catch (_error) {
+    throw new ChatbotError(
+      "bad_request:database",
+      "Failed to update transaction status"
+    );
+  }
+}
+
+export async function getTransactionHistory({
+  userId,
+  limit = 50,
+}: {
+  userId: string;
+  limit?: number;
+}) {
+  try {
+    return await db
+      .select()
+      .from(transactionHistory)
+      .where(
+        or(
+          eq(transactionHistory.senderId, userId),
+          eq(transactionHistory.receiverId, userId)
+        )
+      )
+      .orderBy(desc(transactionHistory.createdAt))
+      .limit(limit);
+  } catch (_error) {
+    throw new ChatbotError(
+      "bad_request:database",
+      "Failed to get transaction history"
+    );
+  }
+}
+
+export async function saveAccount({
+  userId,
+  savedAccountId,
+  shortName,
+}: {
+  userId: string;
+  savedAccountId: string;
+  shortName: string;
+}) {
+  try {
+    const id = generateUUID();
+    return await db.insert(mySavedAccount).values({
+      id,
+      userId,
+      savedAccountId,
+      shortName,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+  } catch (_error) {
+    throw new ChatbotError(
+      "bad_request:database",
+      "Failed to save account"
+    );
+  }
+}
+
+export async function getSavedAccounts({ userId }: { userId: string }) {
+  try {
+    return await db
+      .select({
+        id: mySavedAccount.id,
+        savedAccountId: mySavedAccount.savedAccountId,
+        shortName: mySavedAccount.shortName,
+        createdAt: mySavedAccount.createdAt,
+        updatedAt: mySavedAccount.updatedAt,
+        savedUserEmail: user.email,
+        savedUserName: user.name,
+      })
+      .from(mySavedAccount)
+      .innerJoin(user, eq(mySavedAccount.savedAccountId, user.id))
+      .where(eq(mySavedAccount.userId, userId))
+      .orderBy(asc(mySavedAccount.shortName));
+  } catch (_error) {
+    throw new ChatbotError(
+      "bad_request:database",
+      "Failed to get saved accounts"
+    );
+  }
+}
+
+export async function deleteSavedAccount({
+  userId,
+  savedAccountId,
+}: {
+  userId: string;
+  savedAccountId: string;
+}) {
+  try {
+    return await db
+      .delete(mySavedAccount)
+      .where(
+        and(
+          eq(mySavedAccount.userId, userId),
+          eq(mySavedAccount.savedAccountId, savedAccountId)
+        )
+      );
+  } catch (_error) {
+    throw new ChatbotError(
+      "bad_request:database",
+      "Failed to delete saved account"
     );
   }
 }

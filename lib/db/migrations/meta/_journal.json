@@ -15,6 +15,20 @@
       "when": 1778305453911,
       "tag": "0001_modern_stingray",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1778607851170,
+      "tag": "0002_eager_felicia_hardy",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1778608365925,
+      "tag": "0003_familiar_masked_marvel",
+      "breakpoints": true
     }
   ]
 }

@@ -16,7 +16,9 @@ export type Surface =
   | "vote"
   | "document"
   | "suggestions"
-  | "activate_gateway";
+  | "activate_gateway"
+  | "balance"
+  | "transfer";
 
 export type ErrorCode = `${ErrorType}:${Surface}`;
 
@@ -33,6 +35,8 @@ export const visibilityBySurface: Record<Surface, ErrorVisibility> = {
   document: "response",
   suggestions: "response",
   activate_gateway: "response",
+  balance: "response",
+  transfer: "response",
 };
 
 export class ChatbotError extends Error {

@@ -1,0 +1,1 @@
+ALTER TABLE `Message_v2` ADD `category` varchar(255) DEFAULT 'general' NOT NULL;

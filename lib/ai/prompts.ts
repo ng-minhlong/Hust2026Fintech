@@ -118,6 +118,22 @@ export const updateDocumentPrompt = (
 ${currentContent}`;
 };
 
+export const categoryClassificationPrompt = (userText: string) => `Classify this user query into exactly one of the following categories: advice, manage, invest, checkup, general.
+
+Rules:
+- advice: User asks for financial advice, recommendations, explanations, or guidance on a financial topic.
+- manage: User asks to withdraw money, transfer money, check balance, pay bills, manage an account, or inspect transactions.
+- invest: User asks about investing in a financial product, asset, portfolio, or investment strategy.
+- checkup: User asks for credit evaluation, financial health review, credit score check, or a financial checkup.
+- general: Anything else.
+
+Always return a single lowercase category word with no punctuation.
+
+Query:
+${userText}
+
+Category:`;
+
 export const titlePrompt = `Generate a short chat title (2-5 words) summarizing the user's message.
 
 Output ONLY the title text. No prefixes, no formatting.

@@ -1,12 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ChatbotError } from "@/lib/errors";
 import { getUserBalance, createUserBalance } from "@/lib/db/queries";
+import { auth } from "@/app/(app)/(auth)/auth";
 
 export async function GET(request: NextRequest) {
   try {
-    const userId = request.headers.get("x-user-id");
+
+    const session = await auth();
+    
+    if (!session?.user) {
+      return new ChatbotError("unauthorized:balance").toResponse();
+    }
+
+    const userId = session.user.id;
     if (!userId) {
-      throw new ChatbotError("unauthorized", "User not authenticated");
+      throw new ChatbotError("unauthorized:balance", "User not authenticated");
     }
 
     let balance = await getUserBalance({ userId });
@@ -17,7 +25,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (!balance) {
-      throw new ChatbotError("internal_error", "Failed to retrieve balance");
+      throw new ChatbotError("forbidden:balance", "Failed to retrieve balance");
     }
 
     return NextResponse.json({

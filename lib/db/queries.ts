@@ -64,7 +64,13 @@ export async function createUser(email: string, password: string) {
   const hashedPassword = generateHashedPassword(password);
 
   try {
-    return await db.insert(user).values({ id,email, password: hashedPassword });
+    await db.insert(user).values({ id, email, password: hashedPassword });
+    await createUserBalance({
+      userId: id,
+      accountBalance: "100000",
+      currency: "USD",
+    });
+    return;
   } catch (_error) {
     throw new ChatbotError("bad_request:database", "Failed to create user");
   }
@@ -704,14 +710,22 @@ export async function getUserBalance({ userId }: { userId: string }) {
   }
 }
 
-export async function createUserBalance({ userId }: { userId: string }) {
+export async function createUserBalance({
+  userId,
+  accountBalance = "0.00",
+  currency = "VND",
+}: {
+  userId: string;
+  accountBalance?: string;
+  currency?: string;
+}) {
   try {
     const id = generateUUID();
     return await db.insert(userBalance).values({
       id,
       userId,
-      accountBalance: "0.00",
-      currency: "VND",
+      accountBalance,
+      currency,
       updatedAt: new Date(),
     });
   } catch (_error) {

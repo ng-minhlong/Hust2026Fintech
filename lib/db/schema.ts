@@ -48,6 +48,7 @@ export const message = mysqlTable("Message_v2", {
   parts: json("parts").notNull(),
   attachments: json("attachments").notNull(),
   createdAt: timestamp("createdAt").notNull(),
+  category: varchar("category", { length: 255 }).notNull().default('general'),
 });
 
 export type DBMessage = InferSelectModel<typeof message>;

@@ -1,0 +1,1 @@
+ALTER TABLE `Message_v2` ADD `category` enum('financial_investment','financial_management','financial_advice','other') DEFAULT 'other' NOT NULL;

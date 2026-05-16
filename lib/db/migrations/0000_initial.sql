@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS `Message_v2` (
   `parts` json NOT NULL,
   `attachments` json NOT NULL,
   `createdAt` timestamp NOT NULL,
+  `category` varchar(255) NOT NULL DEFAULT 'general',
   FOREIGN KEY (`chatId`) REFERENCES `Chat`(`id`)
 );
 

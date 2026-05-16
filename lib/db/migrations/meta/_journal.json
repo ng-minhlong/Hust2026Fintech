@@ -29,6 +29,27 @@
       "when": 1778608365925,
       "tag": "0003_familiar_masked_marvel",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1778654247003,
+      "tag": "0004_ambiguous_jubilee",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1778654650110,
+      "tag": "0005_closed_molecule_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1778655330711,
+      "tag": "0006_last_robin_chapel",
+      "breakpoints": true
     }
   ]
 }

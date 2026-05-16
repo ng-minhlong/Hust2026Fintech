@@ -11,8 +11,10 @@ import { useRouter } from "next/navigation";
 import type { User } from "next-auth";
 import { useState } from "react";
 import { toast } from "sonner";
+import useSWR from "swr";
 import { useSWRConfig } from "swr";
 import { unstable_serialize } from "swr/infinite";
+import { fetcher } from "@/lib/utils";
 import {
   getChatHistoryPaginationKey,
   SidebarHistory,
@@ -49,6 +51,15 @@ export function AppSidebar({ user }: { user: User | undefined }) {
   const { setOpenMobile, toggleSidebar } = useSidebar();
   const { mutate } = useSWRConfig();
   const [showDeleteAllDialog, setShowDeleteAllDialog] = useState(false);
+
+  const { data: balanceData } = useSWR<{
+    success: boolean;
+    balance: string;
+    currency: string;
+  }>(user ? "/api/payment/balance" : null, fetcher, {
+    refreshInterval: 10000,
+    revalidateOnFocus: true,
+  });
 
   const handleDeleteAll = () => {
     setShowDeleteAllDialog(false);
@@ -132,6 +143,22 @@ export function AppSidebar({ user }: { user: User | undefined }) {
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
+          {user && (
+            <SidebarGroup className="mt-3">
+              <SidebarGroupContent>
+                <div className="rounded-2xl border border-sidebar-border bg-sidebar-accent/5 p-3">
+                  <p className="text-[11px] uppercase tracking-[0.18em] text-sidebar-foreground/60">
+                    Account balance
+                  </p>
+                  <p className="mt-2 text-sm font-semibold text-sidebar-foreground">
+                    {balanceData?.balance
+                      ? `${balanceData.balance} ${balanceData.currency}`
+                      : "Loading..."}
+                  </p>
+                </div>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          )}
           <SidebarHistory user={user} />
         </SidebarContent>
         <SidebarFooter className="border-t border-sidebar-border pt-2 pb-3">

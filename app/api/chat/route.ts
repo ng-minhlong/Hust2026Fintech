@@ -6,6 +6,7 @@ import {
   generateId,
   stepCountIs,
   streamText,
+  Output,
 } from "ai";
 import { groq } from '@ai-sdk/groq';
 
@@ -25,6 +26,7 @@ import { getLanguageModel } from "@/lib/ai/providers";
 import { createDocument } from "@/lib/ai/tools/create-document";
 import { editDocument } from "@/lib/ai/tools/edit-document";
 import { getWeather } from "@/lib/ai/tools/get-weather";
+import { manage } from "@/lib/ai/tools/manage";
 import { requestSuggestions } from "@/lib/ai/tools/request-suggestions";
 import { updateDocument } from "@/lib/ai/tools/update-document";
 import { isProductionEnvironment } from "@/lib/constants";
@@ -43,7 +45,8 @@ import type { DBMessage } from "@/lib/db/schema";
 import { ChatbotError } from "@/lib/errors";
 import { checkIpRateLimit } from "@/lib/ratelimit";
 import type { ChatMessage } from "@/lib/types";
-import { convertToUIMessages, generateUUID } from "@/lib/utils";
+import { convertToUIMessages, generateUUID, getTextFromMessage } from "@/lib/utils";
+import { categoryClassificationPrompt } from "@/lib/ai/prompts";
 import { generateTitleFromUserMessage } from "../../(app)/chat/actions";
 import { type PostRequestBody, postRequestBodySchema } from "./schema";
 
@@ -58,6 +61,44 @@ function getStreamContext() {
 }
 
 export { getStreamContext };
+
+async function classifyMessageCategory({
+  message,
+  modelId,
+}: {
+  message: ChatMessage;
+  modelId: string;
+}): Promise<"advice" | "manage" | "invest" | "checkup" | "general"> {
+  const text = getTextFromMessage(message).trim();
+
+  if (!text) {
+    return "general";
+  }
+
+  const { partialOutputStream } = streamText({
+    model: OnlyGroq ? groq('openai/gpt-oss-20b') : getLanguageModel(modelId),
+    system: "Classify the intent of the user request into a single category word.",
+    prompt: categoryClassificationPrompt(text),
+    output: Output.text(),
+    stopWhen: stepCountIs(5),
+  });
+
+  let category = "";
+
+  for await (const partialOutput of partialOutputStream) {
+    if (typeof partialOutput === "string") {
+      category += partialOutput;
+    }
+  }
+
+  category = category.trim().toLowerCase().replace(/[^a-z]/g, "");
+
+  if (!["advice", "manage", "invest", "checkup"].includes(category)) {
+    return "general";
+  }
+
+  return category as "advice" | "manage" | "invest" | "checkup" | "general";
+}
 
 export async function POST(request: Request) {
   let requestBody: PostRequestBody;
@@ -167,7 +208,15 @@ export async function POST(request: Request) {
       country,
     };
 
+    let messageCategory: "advice" | "manage" | "invest" | "checkup" | "general" =
+      "general";
+
     if (message?.role === "user") {
+      messageCategory = await classifyMessageCategory({
+        message: message as ChatMessage,
+        modelId: chatModel,
+      });
+
       await saveMessages({
         messages: [
           {
@@ -177,16 +226,34 @@ export async function POST(request: Request) {
             parts: message.parts,
             attachments: [],
             createdAt: new Date(),
+            category: messageCategory,
           },
         ],
       });
     }
 
-
     const modelConfig = chatModels.find((m) => m.id === chatModel);
     let isReasoningModel = false;
     let supportsTools = false;
-   
+    const activeTools: Array<
+      "manage" |
+      "getWeather" |
+      "createDocument" |
+      "editDocument" |
+      "updateDocument" |
+      "requestSuggestions"
+    > = isReasoningModel && !supportsTools
+      ? []
+      : [
+          "getWeather",
+          "createDocument",
+          "editDocument",
+          "updateDocument",
+          "requestSuggestions",
+          ...(messageCategory === "manage"
+            ? (["manage"] as Array<"manage">)
+            : ([] as Array<never>)),
+        ];
 
     const modelMessages = await convertToModelMessages(uiMessages);
 
@@ -199,16 +266,7 @@ export async function POST(request: Request) {
           system: systemPrompt({ requestHints, supportsTools }),
           messages: modelMessages,
           stopWhen: stepCountIs(5),
-          experimental_activeTools:
-            isReasoningModel && !supportsTools
-              ? []
-              : [
-                  "getWeather",
-                  "createDocument",
-                  "editDocument",
-                  "updateDocument",
-                  "requestSuggestions",
-                ],
+          experimental_activeTools: activeTools,
           providerOptions: {
             ...(modelConfig?.gatewayOrder && {
               gateway: { order: modelConfig.gatewayOrder },
@@ -219,6 +277,7 @@ export async function POST(request: Request) {
           },
           tools: {
             getWeather,
+            manage: manage({ session }),
             createDocument: createDocument({
               session,
               dataStream,
@@ -272,6 +331,7 @@ export async function POST(request: Request) {
                     createdAt: new Date(),
                     attachments: [],
                     chatId: id,
+                    category: messageCategory,
                   },
                 ],
               });
@@ -286,6 +346,7 @@ export async function POST(request: Request) {
               createdAt: new Date(),
               attachments: [],
               chatId: id,
+              category: messageCategory,
             })),
           });
         }
